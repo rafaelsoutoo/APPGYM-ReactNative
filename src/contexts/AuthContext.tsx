@@ -31,9 +31,8 @@ type AuthContextProviderProps = {
     async function userAndTokenUpdate(userData: UserDTO, token: string) {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   
-      setUser(userData);//joga os usuarios no estado
+      setUser(userData);//joga os usuarios no estador
     }
-
 
 
     async function storageUserAndTokenSave(userData: UserDTO, token: string) {
@@ -83,7 +82,15 @@ type AuthContextProviderProps = {
   
     useEffect(() => {
       loadUserData()
-    },[])
+    },[]);
+
+    useEffect(() => {
+      const subscribe = api.registerInterceptTokenManager(signOut);
+
+      return () => {
+        subscribe();
+      }
+    },[signOut]);
 
 
     async function signOut() {
