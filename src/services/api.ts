@@ -18,7 +18,7 @@ type APIInstanceProps = AxiosInstance & {
 };
 
 const api = axios.create({
-  baseURL: "http://192.168.0.145:3333",
+  baseURL: "http://10.50.0.124:3333",
 }) as APIInstanceProps;
 
 let failedQueued: Array<PromiseType> = [];
@@ -71,21 +71,27 @@ api.registerInterceptTokenManager = (singOut) => {
                 refresh_token: data.refresh_token,
               });
 
-              if(originalRequestConfig.data){
-                originalRequestConfig.data = JSON.parse(originalRequestConfig.data);
+              if (
+                originalRequestConfig.data &&
+                !(originalRequestConfig.data instanceof FormData)
+              ) {
+                originalRequestConfig.data = JSON.parse(
+                  originalRequestConfig.data
+                )
               }
 
-
               originalRequestConfig.headers = {
-                Authorization: `Bearer ${data.token}`,
-              };
+                ...originalRequestConfig.headers,
+                Authorization:`Bearer ${data.token}`
+              }
+              
               api.defaults.headers.common['Authorization'] = `Bearer ${data.token}`;
 
               failedQueued.forEach(request => {
                 request.onSuccess(data.token);
               });
 
-              console.log("TOKEN ATUALIZADO" );
+              console.log("TOKEN ATUALIZADO");
 
               resolve(api(originalRequestConfig))
 
